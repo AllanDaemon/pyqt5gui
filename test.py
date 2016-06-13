@@ -9,7 +9,7 @@ class SignedTextEdit(QtWidgets.QWidget):
     textChanged = pyqtSignal(str)
     def __init__(self, initial_text=''):
         '''Creates the widget with optionally an initial text'''
-        QtWidgets.QWidget.__init__(self)
+        super().__init__()
         self.my_layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.my_layout)
         self.my_text = QtWidgets.QTextEdit(initial_text)
@@ -41,10 +41,12 @@ class SignedTextEdit(QtWidgets.QWidget):
 
 
 
-class button_printer_ender(QtWidgets.QPushButton):
-    '''Class for a button that chooses a file, prints a QTextEdit and ends a QApplication'''
+class ButtonPrinterEnder(QtWidgets.QPushButton):
+    '''Class for a button that chooses a file, prints a QTextEdit and ends a
+    QApplication
+    '''
     def __init__(self, application, textedit):
-        QtWidgets.QPushButton.__init__(self, 'Print and quit')
+        super().__init__('Print and quit')
         self.app = application
         self.txt = textedit
         self.clicked.connect(self._callback)
@@ -63,7 +65,7 @@ class button_printer_ender(QtWidgets.QPushButton):
         self.app.closeAllWindows()
         self.app.quit()
 
-class file_menu(QtWidgets.QMenu):
+class FileMenu(QtWidgets.QMenu):
     '''Why a class for a file menu? Enter the main window as argument'''
     def __init__(self, win):
         self = win.menuBar().addMenu('File')
@@ -77,14 +79,14 @@ class file_menu(QtWidgets.QMenu):
         self.save_action.triggered.connect(win.centralWidget().save_file)
         self.addAction(self.save_action)
 
-class application_central_widget(QtWidgets.QWidget):
+class ApplicationCentralWidget(QtWidgets.QWidget):
     '''The central widget that will be displayed in the main window'''
     def __init__(self, app):
-        QtWidgets.QWidget.__init__(self)
+        super().__init__()
         self.org = QtWidgets.QVBoxLayout()
         self.hello = QtWidgets.QLabel('Type some text and click the button')
         self.text = SignedTextEdit()
-        self.button = button_printer_ender(app, self.text)
+        self.button = ButtonPrinterEnder(app, self.text)
         self.org.addWidget(self.hello)
         self.org.addWidget(self.text)
         self.org.addWidget(self.button)
@@ -109,23 +111,23 @@ class application_central_widget(QtWidgets.QWidget):
         if d.exec() == QtWidgets.QDialog.Accepted:
             self.text.open_text(d.selectedFiles()[0])
 
-class application_main_window(QtWidgets.QMainWindow):
+class ApplicationMainWindow(QtWidgets.QMainWindow):
     '''This is the main window widget for the application'''
     def __init__(self, app):
-        QtWidgets.QMainWindow.__init__(self)
-        self.central = application_central_widget(app)
+        super().__init__()
+        self.central = ApplicationCentralWidget(app)
         self.setCentralWidget(self.central)
-        self.file_menu = file_menu(self)
+        self.file_menu = FileMenu(self)
     @pyqtSlot('void')
     def new_file(self):
         '''For now, just clear the TextEdit'''
         self.central.clear_text()
 
-class iuris_test_application(QtWidgets.QApplication):
+class IurisTestApplication(QtWidgets.QApplication):
     '''The main class for this application. Make it easy for use in main'''
     def __init__(self):
-        QtWidgets.QApplication.__init__(self, ['Iuri\'s weird application'])
-        self.main_win = application_main_window(self)
+        super().__init__(['Iuri\'s weird application'])
+        self.main_win = ApplicationMainWindow(self)
     def start(self):
         '''Start and run the created application'''
         self.main_win.show()
@@ -133,5 +135,5 @@ class iuris_test_application(QtWidgets.QApplication):
 
 
 if __name__ == '__main__':
-    app = iuris_test_application()
+    app = IurisTestApplication()
     app.start()
